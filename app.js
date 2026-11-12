@@ -91,6 +91,18 @@
       const link = evidence && /^https?:\/\//i.test(evidence)
         ? `<a class="evidence-link" href="${safeEvidence}" target="_blank" rel="noopener noreferrer">${safeEvidence}</a>`
         : (evidence ? `<span class="evidence-link">${safeEvidence}</span>` : "");
+      const evidenceHistory = Array.isArray(task.evidenceHistory) ? task.evidenceHistory : [];
+      const historyMarkup = evidenceHistory.length ? `
+        <div class="evidence-history">
+          <span class="evidence-history-title">Evidence change history</span>
+          <div class="evidence-history-list">${evidenceHistory.slice().reverse().map((entry) => `
+            <div class="evidence-history-item">
+              <span class="evidence-history-action">${entry.action === "removed" ? "Removed" : "Saved"}</span>
+              <span class="evidence-history-value">${entry.value ? escapeHtml(entry.value) : "Evidence cleared"}</span>
+              <time datetime="${escapeHtml(entry.savedAt)}">${new Date(entry.savedAt).toLocaleString()}</time>
+            </div>
+          `).join("")}</div>
+        </div>` : "";
       return `
         <article class="task-card">
           <div class="task-main">
@@ -111,6 +123,7 @@
               </div>
               <p class="evidence-help">Checking the box marks the task as verified by you. TinyProof does not independently validate links or files yet.</p>
               ${link}
+              ${historyMarkup}
             </div>` : ""}
         </article>`;
     }).join("");
@@ -122,9 +135,12 @@
     document.querySelectorAll("[data-save-evidence]").forEach((button) => button.addEventListener("click", () => {
       const task = tasks.find((item) => item.id === button.dataset.saveEvidence);
       const value = $(`evidence-${task.id}`).value.trim();
+      task.evidenceHistory ??= [];
+      task.evidenceHistory.push({ value, action: value ? "saved" : "removed", savedAt: new Date().toISOString() });
+      task.evidenceHistory = task.evidenceHistory.slice(-50);
       task.evidence = value;
       task.verified = false;
-      log(project, value ? `Evidence added for “${task.title}”` : `Evidence removed from “${task.title}”`);
+      log(project, value ? `Evidence updated for “${task.title}”` : `Evidence removed from “${task.title}”`);
       save();
       render();
     }));
