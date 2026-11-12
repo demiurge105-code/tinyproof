@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#10131c">
+  <meta name="description" content="Track project progress with evidence, not guesses.">
+  <title>TinyProof — Evidence-based progress</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="#" aria-label="TinyProof home"><span class="brand-mark">T</span><span>TinyProof</span></a>
+    <div class="top-actions">
+      <button class="button button-quiet" id="export-btn" type="button">Export data</button>
+      <label class="button button-quiet file-label">Import data<input id="import-input" type="file" accept="application/json"></label>
+    </div>
+  </header>
+
+  <main class="shell">
+    <section class="intro">
+      <div>
+        <p class="eyebrow">PROGRESS YOU CAN VERIFY</p>
+        <h1>Make progress <span>provable.</span></h1>
+        <p class="intro-copy">Track the work. Attach evidence. Count only what you can show.</p>
+      </div>
+      <div class="intro-note"><span class="status-dot"></span> Stored locally on this device</div>
+    </section>
+
+    <section class="workspace">
+      <aside class="sidebar">
+        <div class="section-heading"><h2>Projects</h2><span id="project-count" class="count">0</span></div>
+        <form id="project-form" class="new-project">
+          <input id="project-name" type="text" maxlength="70" placeholder="New project name" aria-label="New project name" required>
+          <button class="add-button" type="submit" aria-label="Add project">+</button>
+        </form>
+        <div id="project-list" class="project-list"></div>
+        <div class="sidebar-foot">Your projects stay in this browser. Export a backup regularly.</div>
+      </aside>
+
+      <section class="main-panel" aria-live="polite">
+        <div id="empty-state" class="empty-state">
+          <div class="empty-icon">✳</div>
+          <h2>Start with one project</h2>
+          <p>Create a project, break it into tasks, and attach evidence as you finish work.</p>
+        </div>
+
+        <div id="project-view" hidden>
+          <div class="project-header">
+            <div>
+              <p class="eyebrow">PROJECT OVERVIEW</p>
+              <h2 id="active-project-name"></h2>
+              <p id="project-meta" class="muted"></p>
+            </div>
+            <button id="delete-project-btn" class="text-danger" type="button">Delete project</button>
+          </div>
+
+          <div class="progress-card">
+            <div class="progress-top"><span>Verified progress</span><strong id="progress-value">0%</strong></div>
+            <div class="progress-track"><div id="progress-fill" class="progress-fill"></div></div>
+            <div class="progress-legend"><span id="completed-count">0 verified</span><span id="total-count">0 total tasks</span></div>
+          </div>
+
+          <form id="task-form" class="task-form">
+            <div class="section-heading"><h3>Add a task</h3></div>
+            <div class="task-input-row">
+              <input id="task-title" type="text" maxlength="120" placeholder="What needs to be done?" aria-label="Task title" required>
+              <button class="button button-primary" type="submit">Add task</button>
+            </div>
+          </form>
+
+          <div class="tasks-heading"><h3>Tasks</h3><span class="muted">Evidence required to verify</span></div>
+          <div id="task-list" class="task-list"></div>
+          <div id="history" class="history"></div>
+        </div>
+      </section>
+    </section>
+    <footer class="footer">TinyProof is an early MVP. Evidence is recorded, not independently authenticated.</footer>
+  </main>
+  <script src="app.js"></script>
+</body>
+</html>
