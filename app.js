@@ -95,13 +95,20 @@
       const historyMarkup = evidenceHistory.length ? `
         <div class="evidence-history">
           <span class="evidence-history-title">Evidence change history</span>
-          <div class="evidence-history-list">${evidenceHistory.slice().reverse().map((entry) => `
-            <div class="evidence-history-item">
-              <span class="evidence-history-action">${entry.action === "removed" ? "Removed" : "Saved"}</span>
-              <span class="evidence-history-value">${entry.value ? escapeHtml(entry.value) : "Evidence cleared"}</span>
-              <time datetime="${escapeHtml(entry.savedAt)}">${new Date(entry.savedAt).toLocaleString()}</time>
-            </div>
-          `).join("")}</div>
+          <div class="evidence-history-list">${evidenceHistory.slice().reverse().map((entry) => {
+            const hasPreviousValue = Object.prototype.hasOwnProperty.call(entry, "previousValue");
+            const actionLabel = entry.action === "removed" ? "Removed" : entry.action === "updated" ? "Updated" : "Saved";
+            const previous = hasPreviousValue ? (entry.previousValue ? escapeHtml(entry.previousValue) : "No previous evidence") : null;
+            const current = entry.value ? escapeHtml(entry.value) : "Evidence cleared";
+            return `
+              <div class="evidence-history-item">
+                <span class="evidence-history-action">${actionLabel}</span>
+                <div class="evidence-history-change">
+                  ${hasPreviousValue ? `<span><strong>From:</strong> ${previous}</span><span><strong>To:</strong> ${current}</span>` : `<span class="evidence-history-value">${current}</span>`}
+                </div>
+                <time datetime="${escapeHtml(entry.savedAt)}">${new Date(entry.savedAt).toLocaleString()}</time>
+              </div>`;
+          }).join("")}</div>
         </div>` : "";
       return `
         <article class="task-card">
@@ -135,8 +142,18 @@
     document.querySelectorAll("[data-save-evidence]").forEach((button) => button.addEventListener("click", () => {
       const task = tasks.find((item) => item.id === button.dataset.saveEvidence);
       const value = $(`evidence-${task.id}`).value.trim();
+      const previousValue = task.evidence?.trim() ?? "";
+      if (value === previousValue) {
+        alert("Evidence hasn't changed. Nothing was saved.");
+        return;
+      }
       task.evidenceHistory ??= [];
-      task.evidenceHistory.push({ value, action: value ? "saved" : "removed", savedAt: new Date().toISOString() });
+      task.evidenceHistory.push({
+        previousValue,
+        value,
+        action: !value ? "removed" : previousValue ? "updated" : "saved",
+        savedAt: new Date().toISOString()
+      });
       task.evidenceHistory = task.evidenceHistory.slice(-50);
       task.evidence = value;
       task.verified = false;
