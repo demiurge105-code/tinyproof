@@ -9,3 +9,5 @@
 .evidence-history-action{color:var(--accent-2);font-weight:700}
 .evidence-history-value{overflow-wrap:anywhere}
 .evidence-history-item time{grid-column:2;color:#748096;font-size:9px}
+
+.evidence-history-change{grid-column:2;display:grid;gap:4px;min-width:0;overflow-wrap:anywhere}.evidence-history-change strong{color:#c5ccda;font-weight:650}
