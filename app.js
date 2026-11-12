@@ -41,6 +41,39 @@
     })[char]);
   }
 
+  function describeEvidence(value) {
+    try {
+      const url = new URL(value);
+      if (url.protocol !== "http:" && url.protocol !== "https:") {
+        return { type: "Text note", source: "User-provided note" };
+      }
+      const host = url.hostname.replace(/^www\./i, "").toLowerCase();
+      const parts = url.pathname.split("/").filter(Boolean);
+      let type = "Web link";
+
+      if (host === "github.com" || host.endsWith(".github.com")) {
+        type = "GitHub link";
+        if (host === "github.com" && parts.length >= 4) {
+          if (parts[2] === "issues") type = "GitHub issue";
+          else if (parts[2] === "pull") type = "GitHub pull request";
+          else if (parts[2] === "commit" || parts[2] === "commits") type = "GitHub commit";
+          else if (parts[2] === "blob" || parts[2] === "tree") type = "GitHub file or folder";
+          else type = "GitHub repository";
+        }
+      } else if (host === "x.com" || host === "twitter.com") {
+        type = "X post or profile";
+      } else if (host === "youtube.com" || host === "youtu.be") {
+        type = "YouTube link";
+      } else if (host === "docs.google.com") {
+        type = "Google document";
+      }
+
+      return { type, source: host };
+    } catch {
+      return { type: "Text note", source: "User-provided note" };
+    }
+  }
+
   function render() {
     renderProjects();
     const project = activeProject();
@@ -88,6 +121,12 @@
       const evidence = task.evidence?.trim();
       const status = task.verified && evidence ? "Verified" : evidence ? "Evidence added · not verified" : "Needs evidence";
       const safeEvidence = evidence ? escapeHtml(evidence) : "";
+      const evidenceInfo = evidence ? describeEvidence(evidence) : null;
+      const evidenceMeta = evidenceInfo ? `
+        <div class="evidence-meta">
+          <span><strong>Type</strong>${escapeHtml(evidenceInfo.type)}</span>
+          <span><strong>Source</strong>${escapeHtml(evidenceInfo.source)}</span>
+        </div>` : "";
       const link = evidence && /^https?:\/\//i.test(evidence)
         ? `<a class="evidence-link" href="${safeEvidence}" target="_blank" rel="noopener noreferrer">${safeEvidence}</a>`
         : (evidence ? `<span class="evidence-link">${safeEvidence}</span>` : "");
@@ -130,6 +169,7 @@
               </div>
               <p class="evidence-help">Checking the box marks the task as verified by you. TinyProof does not independently validate links or files yet.</p>
               ${link}
+              ${evidenceMeta}
               ${historyMarkup}
             </div>` : ""}
         </article>`;
