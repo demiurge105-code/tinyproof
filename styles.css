@@ -11,3 +11,5 @@
 .evidence-history-item time{grid-column:2;color:#748096;font-size:9px}
 
 .evidence-history-change{grid-column:2;display:grid;gap:4px;min-width:0;overflow-wrap:anywhere}.evidence-history-change strong{color:#c5ccda;font-weight:650}
+
+.evidence-history-change{gap:6px}.evidence-history-line{display:grid;grid-template-columns:38px minmax(0,1fr);gap:7px;align-items:start;min-width:0}.evidence-history-line strong{color:#c5ccda;font-weight:700}.evidence-history-line span{min-width:0;overflow-wrap:anywhere;white-space:pre-wrap}
