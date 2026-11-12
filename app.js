@@ -104,7 +104,7 @@
               <div class="evidence-history-item">
                 <span class="evidence-history-action">${actionLabel}</span>
                 <div class="evidence-history-change">
-                  ${hasPreviousValue ? `<span><strong>From:</strong> ${previous}</span><span><strong>To:</strong> ${current}</span>` : `<span class="evidence-history-value">${current}</span>`}
+                  ${hasPreviousValue ? `<div class="evidence-history-line"><strong>From</strong><span>${previous}</span></div><div class="evidence-history-line"><strong>To</strong><span>${current}</span></div>` : `<div class="evidence-history-line"><strong>Value</strong><span>${current}</span></div>`}
                 </div>
                 <time datetime="${escapeHtml(entry.savedAt)}">${new Date(entry.savedAt).toLocaleString()}</time>
               </div>`;
